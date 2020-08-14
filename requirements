@@ -1,0 +1,8 @@
+aiohttp
+fastapi
+loguru
+python-dotenv
+uvicorn
+python-multipart
+requests
+pytest-asyncio
