@@ -1,6 +1,6 @@
 import service1.tests as tests
-from service1.client.methods import HealthCheck, OneFile
 import pytest
+from service1.client.methods import HealthCheck, OneFile
 
 import aiohttp
 from loguru import logger

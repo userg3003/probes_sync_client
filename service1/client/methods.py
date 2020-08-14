@@ -15,3 +15,28 @@ class HealthCheck(Method):
     _method = ""
     m_type = "GET"
     auth = None
+
+
+class SeveralFiles(Method):
+    url = "/severalfiles/"
+    m_type = "POST"
+    auth = None
+    headers = {"Content-Type": "multipart/form-data", "accept": "application/json"}
+
+    def __init__(self, files):   #typing.List):
+        Method.__init__(self)
+        assert len("files") > 0, 'you must pass any users'
+        self.files = files
+
+
+class SeveralFilesAuth(Method):
+    url = "/severalfiles_auth/"
+    m_type = "POST"
+    auth = None
+    headers = {"Content-Type": "multipart/form-data", "accept": "application/json"}
+
+    def __init__(self, files):   #typing.List):
+        Method.__init__(self)
+        assert len("files") > 0, 'you must pass any users'
+        self.files = files
+
