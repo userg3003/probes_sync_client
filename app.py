@@ -49,7 +49,7 @@ async def parser(file: bytes = File(...)):
     if file is None:
         # error = json.dumps(blocks[0])
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content="File is None")
-    return JSONResponse(status_code=HTTP_200_OK, content=file)
+    return JSONResponse(status_code=HTTP_200_OK, content=file_src)
 
 
 if __name__ == "__main__":
