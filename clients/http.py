@@ -62,8 +62,6 @@ class Method:
     def body_(self):
         if self.m_type == 'FILE':
             return None
-        if isinstance(self.files, aiohttp.MultipartWriter):
-            return self.files
         if isinstance(self.files, aiohttp.FormData):
             return self.files
         if isinstance(self.files, dict):
