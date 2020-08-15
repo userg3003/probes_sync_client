@@ -111,11 +111,14 @@ async def test_send_SeveralFiles_MultipartWriter_no_auth():
     #         subwriter2.append(open(tests.src_path.joinpath("service1", "tests", "data", file2_name), 'rb'))
     #     multiple_files.append(subwriter2)
     # ============
-    with aiohttp.MultipartWriter() as multiple_files:
-        multiple_files.append(open(tests.src_path.joinpath("service1", "tests", "data", file1_name), 'rb'),
+    with aiohttp.MultipartWriter('multipart/form-data') as multiple_files:
+        with aiohttp.MultipartWriter('files') as files:
+        # part.set_content_disposition('attachment', filename='secret.txt')
+            files.append(open(tests.src_path.joinpath("service1", "tests", "data", file1_name), 'rb'),
                               {"Content-Type": "multipart/form-data"})
-        multiple_files.append(open(tests.src_path.joinpath("service1", "tests", "data", file2_name), 'rb'),
+        files.append(open(tests.src_path.joinpath("service1", "tests", "data", file2_name), 'rb'),
                               {"Content-Type": "multipart/form-data"})
+    multiple_files.append(files)
     # # # Using MultipartWriter
     # multiple_files = aiohttp.MultipartWriter('multipart/form-data')
     # # file1 = aiohttp.MultipartWriter('multipart/form-data')

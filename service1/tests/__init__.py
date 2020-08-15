@@ -36,4 +36,15 @@ def client(token=None):
     # return http.AsyncClient(grader_v2_user_statistics_endpoint, mdws_nc=[set_token_])
     return http.AsyncClient(service_endpoint)
 
+def clientSync(token=None):
+    """
+    client creates individual client for each test of tested service. This is very famous for aiohttp event loop in tests
+    :return:
+    """
+    # t = token
+    # if token is None:
+    #     t = f'{grader_v2_user_statistics_token}'
+    # set_token_ = lambda m: set_auth(m, t, 'auth')
+    # return http.AsyncClient(grader_v2_user_statistics_endpoint, mdws_nc=[set_token_])
+    return http.Client(service_endpoint)
 
