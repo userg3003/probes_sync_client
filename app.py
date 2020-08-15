@@ -1,14 +1,7 @@
 import os
-import json
 from pathlib import Path
 from dotenv import load_dotenv
 from loguru import logger
-from fastapi import FastAPI
-from fastapi import File
-from pydantic import BaseModel
-from starlette.middleware.cors import CORSMiddleware
-from starlette.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from starlette.responses import JSONResponse
 import uvicorn
 
 from fastapi import Depends, File, UploadFile, HTTPException, Security
@@ -21,7 +14,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_429_TOO_MANY_REQUESTS
 from starlette.status import HTTP_401_UNAUTHORIZED
 from starlette.responses import JSONResponse
-
 
 src_path = Path.cwd()
 load_dotenv(dotenv_path=src_path.joinpath(".deploy", ".envs", "local.env"))
@@ -77,32 +69,36 @@ async def onefile(file: bytes = File(...)):
     return JSONResponse(status_code=HTTP_200_OK, content=file_src)
 
 
+@app.post("/onefile_auth/")
+async def onefile_auth(file: bytes = File(...), token_: Token = Depends(get_current_token)):
+    logger.debug(f"FILE ----------------------:\n{file}\n   =========================")
+    file_src = file.decode("utf-8-sig")
+    logger.debug(f"FILE --------- decoded -------------:\n{file_src}\n   ============= decoded ============")
+    if file is None:
+        # error = json.dumps(blocks[0])
+        return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content="File is None")
+    return JSONResponse(status_code=HTTP_200_OK, content=file_src)
+
+
 @app.post("/severalfiles/")
 async def severalfiles(files: List[UploadFile] = File(...)):
     logger.debug(f"FILES ----------------------:  {len(files)}  :=========================")
     if files is None:
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content="Files is None")
-    return JSONResponse(status_code=HTTP_200_OK, content=f"Len(files): {len(files)}")
+    content = {"count_files": len(files), 'files': [{'name': file.filename} for file in files]}
+    return JSONResponse(status_code=HTTP_200_OK, content=content)
 
 
-@app.post("/severalfiles_auth/")
-async def severalfiles_auth(files: List[UploadFile] = File(...), token_: Token = Depends(get_current_token)):
-    logger.debug(f"token {token}")
-    if token != token_.value:
-        raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Incorrect token",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    uploaded_files = []
-    meta_file = {}
-    logger.debug(f"FILE ----------------------:\n{json.dumps(files)}\n   =========================")
-    # file_src = file.decode("utf-8-sig")
-    # logger.debug(f"FILE --------- decoded -------------:\n{file_src}\n   ============= decoded ============")
+@app.post("/severalfiles_auth_token/")
+async def severalfiles_auth_token(files: List[UploadFile] = File(...), token_: Token = Depends(get_current_token)):
+    logger.debug(f"token {token_}")
     if files is None:
         # error = json.dumps(blocks[0])
         return JSONResponse(status_code=HTTP_400_BAD_REQUEST, content="Files is None")
-    return JSONResponse(status_code=HTTP_200_OK, content=token)
+    content = {"count_files": len(files), 'files': [{'name': file.filename} for file in files]}
+
+    return JSONResponse(status_code=HTTP_200_OK, content=content)
+
 
 if __name__ == "__main__":
     logger.info(f'START Service')

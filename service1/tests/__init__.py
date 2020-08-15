@@ -2,7 +2,6 @@ import os
 
 from pathlib import Path
 from dotenv import load_dotenv
-from loguru import logger
 
 from clients import http
 
@@ -13,7 +12,6 @@ port = os.environ.get("PORT")
 host = os.environ.get("HOST")
 schema = os.environ.get("SCHEMA")
 
-
 service_endpoint = schema + '://' + host + ':' + port
 
 
@@ -21,6 +19,13 @@ def set_auth(m, t, n):
     if m.headers is None:
         m.headers = {}
     m.headers[n] = t
+    return m
+
+
+def set_auth_token(m):
+    if m.headers is None:
+        m.headers = {}
+    m.headers['token'] = f'{token}'
     return m
 
 
@@ -36,6 +41,7 @@ def client(token=None):
     # return http.AsyncClient(grader_v2_user_statistics_endpoint, mdws_nc=[set_token_])
     return http.AsyncClient(service_endpoint)
 
+
 def clientSync(token=None):
     """
     client creates individual client for each test of tested service. This is very famous for aiohttp event loop in tests
@@ -48,3 +54,6 @@ def clientSync(token=None):
     # return http.AsyncClient(grader_v2_user_statistics_endpoint, mdws_nc=[set_token_])
     return http.Client(service_endpoint)
 
+
+def client_auth_token():
+    return http.AsyncClient(service_endpoint, mdws_nc=[set_auth_token])

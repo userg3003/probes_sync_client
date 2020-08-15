@@ -155,6 +155,19 @@ class AsyncClient:
         auth_ = method.auth
         proxy = proxy if proxy is not None else None
         files = method.files if method.files is not None else None
+        if files is not None:
+            form = aiohttp.FormData()
+            if isinstance(files, typing.List):
+                for f in files:
+                    form.add_field(
+                        'files',
+                        f[1],
+                        filename=f[0],
+                        content_type='multipart/form-data',
+                    )
+            if isinstance(files, typing.Dict):
+                form=files
+            body = form
         url = self.__get_url(method)
         # assert files is None, "files files is not supported. please use {'file': open('file', 'rb')} and pass data"
         if m_type == 'get':
